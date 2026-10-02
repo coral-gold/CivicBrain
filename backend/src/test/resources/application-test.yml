@@ -16,3 +16,4 @@ app:
   storage-dir: target/test-uploads
   scheduling-enabled: false
   ward-count-fallback: 30
+  demo-data: false

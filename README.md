@@ -13,23 +13,43 @@ fix first, what it needs and how to schedule it. **CivicBrain recommends; the of
 | M3 – AI service | ⏳ `AiClient` seam + async pipeline hook exist; complaints stay `SUBMITTED` |
 | M4–M7 | ⏳ |
 
-## Run locally
+## Easiest way to run it (no coding needed)
+
+1. Install **Docker Desktop** (free): https://www.docker.com/products/docker-desktop — then open it and wait until it says it is running.
+2. Download this project (green **Code** button on GitHub → **Download ZIP**, then unzip it).
+3. Start it:
+   * **Windows:** double-click `start.bat`
+   * **Mac / Linux:** open a terminal in the folder and run `./start.sh`
+4. The first start takes a few minutes. When it finishes, your browser opens **http://localhost:3000**.
+
+**Try it as a citizen**
+1. Click **Sign up**, enter any name and email (it can be fake, e.g. `me@test.com`).
+2. Open the **email inbox** at **http://localhost:8025** — the 6-digit login code is in the newest email. Type it in.
+3. Fill the registration form (any 10-digit number starting 6–9, e.g. `9876543210`; ward 1, 2 or 3).
+4. Click **Report an issue** → add a photo → tap the map (or allow location) → describe the problem → submit.
+
+**Try it as staff** — go to http://localhost:3000/admin/login
+| Role | Email | Password |
+|---|---|---|
+| Officer (Ward 1) | `officer@civicbrain.demo` | `Officer!Demo2026` |
+| Admin (all wards) | `admin@civicbrain.demo` | `Admin!Demo2026x` |
+
+> Complaints made outside the 3 demo wards (they are near Pimpri-Chinchwad) are still accepted; they are
+> filed under the ward you chose in your profile and flagged ⚑. Officers only see their own ward; the admin sees all.
+
+**Stop it:** run `docker compose down` (add `-v` to also erase all data).
+
+These logins and secrets are public demo values — fine on your own computer, never on a public server.
+
+## For developers
 
 ```bash
-cp .env.example .env            # fill the three secrets (openssl rand -base64 48) and the seed admin
-docker compose up -d            # PostGIS on :5432, Mailpit on :1025 (UI at http://localhost:8025)
-
-# backend (Java 17+, Maven)
-cd backend && set -a && . ../.env && set +a && mvn spring-boot:run     # http://localhost:8080
-
-# frontend (Node 20+)
-cd frontend && cp .env.example .env.local   # same JWT_SECRET as the backend
-npm install && npm run dev                  # http://localhost:3000
+docker compose up -d db mailpit      # just the database and mail catcher
+# backend: see .env.example for the variables, then
+cd backend && mvn spring-boot:run
+# frontend
+cd frontend && cp .env.example .env.local && npm install && npm run dev
 ```
-
-OTP emails appear in Mailpit. Sign in as staff at `/admin/login` with the seeded SUPER_ADMIN, upload ward
-boundaries at `/admin/settings/wards` (GeoJSON FeatureCollection with `properties.number` + `properties.name`),
-and create officers with `POST /api/admin/staff`.
 
 ## Tests
 

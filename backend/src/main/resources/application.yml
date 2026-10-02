@@ -41,3 +41,4 @@ app:
   seed-admin-name: ${SEED_ADMIN_NAME:Super Admin}
   storage-dir: ${STORAGE_DIR:./uploads}
   scheduling-enabled: ${SCHEDULING_ENABLED:true}
+  demo-data: ${DEMO_DATA:false}              # dev only: preload sample wards + a demo officer

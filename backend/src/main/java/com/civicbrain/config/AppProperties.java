@@ -16,7 +16,8 @@ public record AppProperties(
         String seedAdminPassword,
         String seedAdminName,
         String storageDir,
-        boolean schedulingEnabled) {
+        boolean schedulingEnabled,
+        boolean demoData) {
 
     public AppProperties {
         // Fail fast: secrets come only from env vars (NFR-S5) and must be strong enough to sign with.
