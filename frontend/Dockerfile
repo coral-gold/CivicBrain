@@ -6,6 +6,7 @@ COPY . .
 # next.config.mjs bakes the /api proxy target in at build time, so it must be set here (see docker-compose.yml).
 ARG BACKEND_URL=http://backend:8080
 ENV BACKEND_URL=$BACKEND_URL
+ENV SKIP_CHECKS=1 NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=--max-old-space-size=3072
 RUN npm run build
 
 FROM node:20-slim

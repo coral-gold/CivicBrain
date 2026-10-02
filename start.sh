@@ -5,12 +5,17 @@ if ! command -v docker >/dev/null 2>&1; then
   echo "Docker is not installed. Install Docker Desktop from https://www.docker.com/products/docker-desktop and try again."
   exit 1
 fi
-echo "Starting CivicBrain (first time takes a few minutes)..."
-docker compose up --build -d || { echo "Could not start. Is Docker Desktop open and running?"; exit 1; }
+if ! docker info >/dev/null 2>&1; then
+  echo "Docker is not running. Open Docker Desktop, wait until it is ready, then run this again."
+  exit 1
+fi
+echo "Starting CivicBrain. The FIRST time can take 5-20 minutes; later starts take under a minute."
+docker compose up --build -d || { echo "Something went wrong while building. Please send a screenshot of this window."; exit 1; }
 echo "Waiting for the app to be ready..."
 for i in $(seq 1 90); do
   curl -fs http://localhost:3000/api/public/config >/dev/null 2>&1 && break
   sleep 2
+  if [ "$i" = 90 ]; then echo "The app did not become ready:"; docker compose ps; docker compose logs --tail 25; exit 1; fi
 done
 cat <<MSG
 

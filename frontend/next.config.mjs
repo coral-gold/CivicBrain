@@ -18,6 +18,9 @@ const csp = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Docker builds skip lint/type-check (CI already runs them) – this makes the first build much faster on slow PCs.
+  eslint: { ignoreDuringBuilds: !!process.env.SKIP_CHECKS },
+  typescript: { ignoreBuildErrors: !!process.env.SKIP_CHECKS },
   poweredByHeader: false,
   async rewrites() {
     return [{ source: "/api/:path*", destination: `${backend}/api/:path*` }];
