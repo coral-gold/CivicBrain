@@ -17,6 +17,14 @@ export function safeNext(next: string | null | undefined, fallback = "/dashboard
   return next;
 }
 
+/**
+ * Full-page navigation for auth transitions (login/logout/profile saved): the session cookie just changed,
+ * so we want middleware to see it and the client router cache to start empty.
+ */
+export function hardNavigate(path: string) {
+  window.location.assign(path);
+}
+
 export const isStaff = (role: Role) => role !== "CITIZEN";
 
 export function homeFor(role: Role, profileComplete: boolean): string {

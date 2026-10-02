@@ -1,0 +1,21 @@
+# Dev infrastructure. Later milestones add: ai (M3), osrm (M5).
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: civic
+      POSTGRES_PASSWORD: civic
+      POSTGRES_DB: civicbrain
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U civic -d civicbrain"]
+      interval: 5s
+      retries: 10
+
+  mailpit:            # catches OTP emails in dev: http://localhost:8025
+    image: axllent/mailpit:latest
+    ports: ["1025:1025", "8025:8025"]
+
+volumes:
+  pgdata:

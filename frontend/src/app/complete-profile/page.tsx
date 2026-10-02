@@ -12,6 +12,7 @@ import { usePublicConfig } from "@/hooks/usePublicConfig";
 import { useUser } from "@/hooks/useUser";
 import { api, User } from "@/lib/api";
 import { applyServerErrors } from "@/lib/forms";
+import { hardNavigate } from "@/lib/navigation";
 import { GENDERS, profileSchema, ProfileValues } from "@/lib/validation";
 
 function ProfileForm({ user, wardCount }: { user: User; wardCount: number }) {
@@ -26,8 +27,7 @@ function ProfileForm({ user, wardCount }: { user: User; wardCount: number }) {
     setError(null);
     try {
       await api.put("/citizen/profile", values);
-      router.replace("/dashboard");
-      router.refresh();
+      hardNavigate("/dashboard");
     } catch (e) {
       setError(applyServerErrors(e, setFieldError));
     }

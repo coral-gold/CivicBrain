@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import Alert from "@/components/Alert";
@@ -10,13 +10,12 @@ import AuthCard from "@/components/AuthCard";
 import Button from "@/components/Button";
 import Field from "@/components/Field";
 import { api, ApiError, User } from "@/lib/api";
-import { safeNext } from "@/lib/navigation";
+import { hardNavigate, safeNext } from "@/lib/navigation";
 import { adminLoginSchema } from "@/lib/validation";
 
 type Values = { email: string; password: string };
 
 function AdminLoginForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Values>({ resolver: zodResolver(adminLoginSchema) });
@@ -26,8 +25,7 @@ function AdminLoginForm() {
     try {
       await api.post<{ user: User }>("/auth/admin/login", values);
       const next = safeNext(params.get("next"), "/admin/dashboard");
-      router.replace(next.startsWith("/admin") ? next : "/admin/dashboard");
-      router.refresh();
+      hardNavigate(next.startsWith("/admin") ? next : "/admin/dashboard");
     } catch (e) {
       if (e instanceof ApiError && e.code === "ACCOUNT_LOCKED") {
         const mins = Math.max(1, Math.ceil((e.retryAfterSeconds ?? 900) / 60));

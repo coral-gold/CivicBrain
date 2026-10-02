@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import Alert from "@/components/Alert";
@@ -12,13 +12,12 @@ import Field from "@/components/Field";
 import OtpEntry from "@/components/OtpEntry";
 import { api, OtpSent, User } from "@/lib/api";
 import { applyServerErrors } from "@/lib/forms";
-import { safeNext } from "@/lib/navigation";
+import { hardNavigate, safeNext } from "@/lib/navigation";
 import { loginSchema } from "@/lib/validation";
 
 type Values = { email: string };
 
 function LoginForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const [sent, setSent] = useState<{ email: string; resend: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -37,8 +36,7 @@ function LoginForm() {
   async function verify(otp: string) {
     const r = await api.post<{ user: User }>("/auth/citizen/login/verify", { email: sent!.email, otp });
     // FR-A5: incomplete profiles go to the details form; otherwise honour a *safe* ?next= (AT-13).
-    router.replace(r.user.profileComplete ? safeNext(params.get("next")) : "/complete-profile");
-    router.refresh();
+    hardNavigate(r.user.profileComplete ? safeNext(params.get("next")) : "/complete-profile");
   }
 
   async function resend() {

@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Alert from "@/components/Alert";
@@ -12,12 +11,12 @@ import Field from "@/components/Field";
 import OtpEntry from "@/components/OtpEntry";
 import { api, OtpSent, User } from "@/lib/api";
 import { applyServerErrors } from "@/lib/forms";
+import { hardNavigate } from "@/lib/navigation";
 import { signupSchema } from "@/lib/validation";
 
 type Values = { name: string; email: string };
 
 export default function SignupPage() {
-  const router = useRouter();
   const [sent, setSent] = useState<{ values: Values; resend: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, setError: setFieldError, formState: { errors, isSubmitting } } = useForm<Values>({ resolver: zodResolver(signupSchema) });
@@ -34,8 +33,7 @@ export default function SignupPage() {
 
   async function verify(otp: string) {
     await api.post<{ user: User }>("/auth/citizen/signup/verify", { email: sent!.values.email, otp });
-    router.replace("/complete-profile");
-    router.refresh();
+    hardNavigate("/complete-profile");
   }
 
   async function resend() {
