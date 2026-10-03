@@ -8,7 +8,10 @@ cd "$(dirname "$0")"
 ROOT="$(pwd)"; RUN="$ROOT/.run"; mkdir -p "$RUN"
 SUDO=""; [ "$(id -u)" != 0 ] && SUDO="sudo"
 
-pgsu() { if [ "$(id -u)" = 0 ]; then su postgres -c "psql $(printf '%q ' "$@")"; else sudo -u postgres psql "$@"; fi; }
+pgsu() {  # run psql as the postgres OS user; "sudo su" is passwordless in Codespaces, "sudo -u postgres" is not
+  local cmd="psql $(printf '%q ' "$@")"
+  if [ "$(id -u)" = 0 ]; then su postgres -c "$cmd"; else sudo su postgres -c "$cmd"; fi
+}
 stop_all() {
   for f in "$RUN"/*.pid; do [ -f "$f" ] && kill "$(cat "$f")" 2>/dev/null || true; rm -f "$f"; done
 }
