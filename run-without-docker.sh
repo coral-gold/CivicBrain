@@ -21,7 +21,9 @@ if ! command -v apt-get >/dev/null 2>&1; then
   exit 1
 fi
 echo "[1/6] Installing required tools (Java, Maven, Node, PostgreSQL + PostGIS)..."
-$SUDO apt-get update -qq
+# GitHub's base image ships a Yarn apt source with an expired key; it breaks "apt-get update" and we don't need Yarn.
+$SUDO rm -f /etc/apt/sources.list.d/yarn.list
+$SUDO apt-get update -qq || echo "(some package sources could not be refreshed – continuing)"
 PKGS="postgresql postgis curl"
 command -v java >/dev/null || PKGS="$PKGS openjdk-17-jdk"
 command -v mvn  >/dev/null || PKGS="$PKGS maven"
