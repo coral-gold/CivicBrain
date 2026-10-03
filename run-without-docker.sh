@@ -15,6 +15,11 @@ stop_all() {
 if [ "$1" = "stop" ]; then stop_all; echo "Stopped."; exit 0; fi
 stop_all
 
+if ! command -v apt-get >/dev/null 2>&1; then
+  echo "This system has no apt-get (Codespaces 'recovery mode'?)."
+  echo "Fix: press Ctrl+Shift+P, run 'Codespaces: Rebuild Container', wait, then run this script again."
+  exit 1
+fi
 echo "[1/6] Installing required tools (Java, Maven, Node, PostgreSQL + PostGIS)..."
 $SUDO apt-get update -qq
 PKGS="postgresql postgis curl"
