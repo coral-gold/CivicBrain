@@ -8,3 +8,4 @@ backend/uploads/
 .vscode/
 ai-service/app/models/
 *.tsbuildinfo
+.run/
