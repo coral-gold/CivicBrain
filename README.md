@@ -41,6 +41,16 @@ fix first, what it needs and how to schedule it. **CivicBrain recommends; the of
 
 These logins and secrets are public demo values — fine on your own computer, never on a public server.
 
+## No Docker on your PC? Use GitHub Codespaces (free, runs in the browser)
+
+1. Open the repository on GitHub and sign in.
+2. Click the green **Code** button → **Codespaces** tab → the **…** menu → **New with options**.
+3. Choose the branch `claude/wonderful-ramanujan-3drd0r`, then **Create codespace**.
+4. Wait 5–10 minutes while it builds (the first time only). The browser tab shows VS Code — ignore it.
+5. When the bottom panel's **Ports** tab lists **3000** and **8025**, click the 🌐 globe next to **3000** to open the app,
+   and the globe next to **8025** to open the email inbox that shows your login codes.
+6. Same demo logins as above. When finished, stop the codespace (Code → Codespaces → ⋯ → Stop) to save free hours.
+
 ## For developers
 
 ```bash

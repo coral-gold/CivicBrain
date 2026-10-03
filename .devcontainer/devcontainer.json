@@ -1,0 +1,14 @@
+{
+  "name": "CivicBrain",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "hostRequirements": { "cpus": 4, "memory": "8gb" },
+  "postStartCommand": "docker compose up --build -d",
+  "forwardPorts": [3000, 8025],
+  "portsAttributes": {
+    "3000": { "label": "CivicBrain app (open this)", "onAutoForward": "openBrowser" },
+    "8025": { "label": "Email inbox (login codes)", "onAutoForward": "notify" }
+  }
+}
