@@ -14,8 +14,6 @@ Stack: React + Vite · Node.js + Express · MongoDB. Specification: `SRS.md` (v2
 | M4 – Map, heatmap, route plan, analytics | ⏳ |
 | M5 – Super-admin settings, emails, demo seed data, deploy | ⏳ |
 
-The earlier Spring Boot / Next.js build is kept for reference in `legacy-spring-boot/` (superseded by SRS v2.0).
-
 ## Run it (no technical knowledge needed)
 
 1. Install **Node.js** (the "LTS" button on https://nodejs.org) and restart your computer if the installer asks.

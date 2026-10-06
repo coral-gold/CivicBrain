@@ -6,7 +6,7 @@ import globals from 'globals';
 const unused = ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }];
 
 export default [
-  { ignores: ['**/dist/**', '**/node_modules/**', 'legacy-spring-boot/**', 'server/.data/**'] },
+  { ignores: ['**/dist/**', '**/node_modules/**', 'server/.data/**'] },
   js.configs.recommended,
   {
     files: ['server/**/*.js', 'scripts/**/*.js', '*.js'],
