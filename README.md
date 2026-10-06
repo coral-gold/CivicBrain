@@ -1,87 +1,67 @@
-# CivicBrain
+# CivicBrain (prototype)
 
-AI-powered municipal decision-support and resource-optimisation platform (Pimpri Chinchwad University,
-Major Project-I, Group A1). Citizens report civic problems; officers get AI-assisted decisions on what to
-fix first, what it needs and how to schedule it. **CivicBrain recommends; the officer decides.**
+Citizens report civic problems (roads, water, garbage, drainage, streetlights); municipal officers get a ranked,
+explainable queue of what to fix first. **CivicBrain recommends; the officer decides.**
+Stack: React + Vite · Node.js + Express · MongoDB. Specification: `SRS.md` (v2.0).
 
 ## Status
 
 | Milestone | State |
 |---|---|
-| M1 – Auth (citizen email-OTP, staff password, JWT cookie, profile, staff accounts) | ✅ rebuilt from SRS §5.1 |
-| M2 – Wards (GeoJSON/PostGIS), categories, complaint submission with images + GPS, citizen list/timeline, me-too, confirm/reopen | ✅ |
-| M3 – AI service | ⏳ `AiClient` seam + async pipeline hook exist; complaints stay `SUBMITTED` |
-| M4–M7 | ⏳ |
+| **M1** – Auth: citizen email-OTP signup/login, registration details, staff password login, sessions, guards, seed (super admin + 5 wards) | ✅ done and tested |
+| M2 – Report wizard, duplicates / "Me too", my complaints, timeline | ⏳ |
+| M3 – Rule-based engines, officer queue, action plans | ⏳ |
+| M4 – Map, heatmap, route plan, analytics | ⏳ |
+| M5 – Super-admin settings, emails, demo seed data, deploy | ⏳ |
 
-## Easiest way to run it (no coding needed)
+The earlier Spring Boot / Next.js build is kept for reference in `legacy-spring-boot/` (superseded by SRS v2.0).
 
-1. Install **Docker Desktop** (free): https://www.docker.com/products/docker-desktop — then open it and wait until it says it is running.
-2. Download this project (green **Code** button on GitHub → **Download ZIP**, then unzip it).
+## Run it (no technical knowledge needed)
+
+1. Install **Node.js** (the "LTS" button on https://nodejs.org) and restart your computer if the installer asks.
+2. Get the project: on GitHub click **Code → Download ZIP**, then unzip it.
 3. Start it:
-   * **Windows:** double-click `start.bat`
-   * **Mac / Linux:** open a terminal in the folder and run `./start.sh`
-4. The first start takes a few minutes. When it finishes, your browser opens **http://localhost:3000**.
+   * **Windows:** double-click **`start.bat`**
+   * **Mac / Linux:** open a terminal in the folder and run **`./start.sh`**
+4. First time only: it installs things and downloads a small built-in database (about 100 MB) — a few minutes.
+   Your browser opens **http://localhost:5173** by itself. Keep the black window open while you use the app.
 
-**Try it as a citizen**
-1. Click **Sign up**, enter any name and email (it can be fake, e.g. `me@test.com`).
-2. Open the **email inbox** at **http://localhost:8025** — the 6-digit login code is in the newest email. Type it in.
-3. Fill the registration form (any 10-digit number starting 6–9, e.g. `9876543210`; ward 1, 2 or 3).
-4. Click **Report an issue** → add a photo → tap the map (or allow location) → describe the problem → submit.
+**Try it as a citizen:** Sign up with any name and email → the 6-digit code is **printed in the black window**
+(look for `[DEV ONLY] OTP for …`) → type it in → fill the registration form (phone: any 10 digits starting 6–9,
+e.g. `9876543210`; pick a ward) → you land on your dashboard.
 
-**Try it as staff** — go to http://localhost:3000/admin/login
-| Role | Email | Password |
-|---|---|---|
-| Officer (Ward 1) | `officer@civicbrain.demo` | `Officer!Demo2026` |
-| Admin (all wards) | `admin@civicbrain.demo` | `Admin!Demo2026x` |
+**Try it as staff:** http://localhost:5173/staff/login → `admin@civicbrain.local` / `Change.Me.Str0ng!`
 
-> Complaints made outside the 3 demo wards (they are near Pimpri-Chinchwad) are still accepted; they are
-> filed under the ward you chose in your profile and flagged ⚑. Officers only see their own ward; the admin sees all.
+To stop: close the black window (or press `Ctrl+C`). Your data is kept in `server/.data`; delete that folder to start fresh.
 
-**Stop it:** run `docker compose down` (add `-v` to also erase all data).
-
-These logins and secrets are public demo values — fine on your own computer, never on a public server.
-
-## No Docker on your PC? Use GitHub Codespaces (free, runs in the browser)
-
-1. Open the repository on GitHub and sign in.
-2. Click the green **Code** button → **Codespaces** tab → the **…** menu → **New with options**.
-3. Choose the branch `claude/wonderful-ramanujan-3drd0r`, then **Create codespace**.
-4. When the VS Code page opens, click the **Terminal** tab at the bottom, type `./run-without-docker.sh` and press Enter.
-   Wait 5–10 minutes (first time only). It prints "CivicBrain is running" when ready.
-5. When the bottom panel's **Ports** tab lists **3000** and **8025**, click the 🌐 globe next to **3000** to open the app,
-   and the globe next to **8025** to open the email inbox that shows your login codes.
-6. Same demo logins as above. When finished, stop the codespace (Code → Codespaces → ⋯ → Stop) to save free hours.
+### No installation: GitHub Codespaces
+Open the repository on GitHub → **Code → Codespaces → New with options**, choose the branch, **Create codespace**. When it
+opens, click **Terminal**, type `npm run demo` and press Enter. When "CivicBrain API listening" appears, open the **Ports**
+tab and click the globe next to **5173**. Login codes appear in that same terminal.
 
 ## For developers
 
 ```bash
-docker compose up -d db mailpit      # just the database and mail catcher
-# backend: see .env.example for the variables, then
-cd backend && mvn spring-boot:run
-# frontend
-cd frontend && cp .env.example .env.local && npm install && npm run dev
+npm install
+npm run setup     # creates server/.env with random secrets (once)
+npm run seed      # 5 demo wards + super admin from ADMIN_SEED_* (safe to repeat)
+npm run dev       # API on :5000, Vite on :5173 (proxies /api)
+npm test          # server (Jest + supertest + mongodb-memory-server) and client (Vitest)
+npm run lint
+npm run build     # client → client/dist (Express serves it when present)
 ```
 
-## Tests
+* `MONGO_URI=memory` (default in development) runs MongoDB inside the server process with files in `server/.data`.
+  Use a real database with `MONGO_URI=mongodb://…` (`docker compose up -d` starts one).
+* `OTP_DEV_LOG=true` prints OTPs in the server console; the server **refuses to start in production** with it on, with weak
+  secrets, with `MONGO_URI=memory`, or without SMTP settings.
+* Email goes through SMTP (Brevo in production). With no SMTP configured in development nothing is sent.
 
-```bash
-# backend – needs a PostGIS database; defaults to localhost:5432/civicbrain_test (civic/civic),
-# override with TEST_DB_URL / TEST_DB_USER / TEST_DB_PASSWORD. The schema is wiped on every run.
-cd backend && mvn test
+## Security notes (SRS §8.1)
 
-cd frontend && npm run typecheck && npm run lint && npm test
-```
-
-## Layout
-
-See SRS §4. Backend is package-by-feature under `com.civicbrain`; DB changes are Flyway-only
-(`V1` auth, `V2` wards/categories, `V3` complaints) – never edit an applied migration.
-
-## Security notes
-
-* Session = signed JWT in an `HttpOnly; SameSite=Lax` cookie (`Secure` when `COOKIE_SECURE=true`). The backend
-  re-reads the account on every request, so disabling a user takes effect immediately.
-* CSRF: no token; protection relies on `SameSite=Lax`, JSON/multipart-only writes and no state change on GET.
-* Uploads: magic-byte validation, ≤ 5 MB, decompression-bomb guard, always re-encoded to JPEG (drops EXIF/GPS),
-  random keys outside the web root, served only through short-lived HMAC-signed URLs.
-* Rate limits (OTP, admin login, 10 complaints/day) are in-memory – move to Redis before running >1 API instance.
+Session = signed JWT in an `httpOnly; SameSite=Lax` cookie (`Secure` in production), never in browser storage; the account is
+re-read from the database on every request, so disabling a user takes effect immediately. OTPs are stored only as HMAC hashes
+(5-minute expiry, single use, 5 attempts, 60 s resend cooldown, 5 sends/hour). Staff accounts lock for 15 minutes after 5 wrong
+passwords. Unknown and known emails get identical responses (no account enumeration). Mutating requests must be JSON or
+multipart; `$`/`.` keys are rejected; every auth event is audit-logged with IP and user agent.
+Rate limits are in memory — fine for one instance, move to a shared store before scaling out.

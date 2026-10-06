@@ -1,11 +1,9 @@
-.env
-*.log
 node_modules/
-.next/
-target/
-backend/uploads/
+dist/
+.env
+server/.data/
+server/uploads/
+*.log
 .idea/
 .vscode/
-ai-service/app/models/
-*.tsbuildinfo
-.run/
+.DS_Store

@@ -1,9 +1,9 @@
 {
   "name": "CivicBrain",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "forwardPorts": [3000, 8025],
+  "postCreateCommand": "npm install",
+  "forwardPorts": [5173],
   "portsAttributes": {
-    "3000": { "label": "CivicBrain app (open this)", "onAutoForward": "openBrowser" },
-    "8025": { "label": "Email inbox (login codes)", "onAutoForward": "notify" }
+    "5173": { "label": "CivicBrain app (open this)", "onAutoForward": "openBrowser" }
   }
 }

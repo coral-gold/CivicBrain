@@ -1,55 +1,10 @@
-# One command runs everything:   docker compose up --build
-# Then open http://localhost:3000   (OTP emails: http://localhost:8025)
-#
-# The secrets below are DEMO values for trying the app on your own computer. Never use them on a public server.
-x-secrets: &secrets
-  JWT_SECRET: demo-only-jwt-secret-change-me-0123456789abcdef
-  OTP_HMAC_SECRET: demo-only-otp-secret-change-me-0123456789abcdef
-  MEDIA_SIGNING_SECRET: demo-only-media-secret-change-me-0123456789ab
-
+# Optional: a real local MongoDB instead of the built-in one.
+#   docker compose up -d
+#   then set MONGO_URI=mongodb://localhost:27017/civicbrain in server/.env
 services:
-  db:
-    image: postgis/postgis:16-3.4
-    environment:
-      POSTGRES_USER: civic
-      POSTGRES_PASSWORD: civic
-      POSTGRES_DB: civicbrain
-    volumes: ["pgdata:/var/lib/postgresql/data"]
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U civic -d civicbrain"]
-      interval: 5s
-      retries: 20
-
-  mailpit:            # the "inbox" where login codes arrive in the demo
-    image: axllent/mailpit:latest
-    ports: ["8025:8025"]
-
-  backend:
-    build: ./backend
-    depends_on:
-      db: { condition: service_healthy }
-    environment:
-      <<: *secrets
-      DB_URL: jdbc:postgresql://db:5432/civicbrain
-      DB_USER: civic
-      DB_PASSWORD: civic
-      SMTP_HOST: mailpit
-      SMTP_PORT: "1025"
-      COOKIE_SECURE: "false"
-      DEMO_DATA: "true"
-      SEED_ADMIN_EMAIL: admin@civicbrain.demo
-      SEED_ADMIN_PASSWORD: Admin!Demo2026x
-      STORAGE_DIR: /data/uploads
-    volumes: ["uploads:/data/uploads"]
-
-  frontend:
-    build: ./frontend
-    depends_on: [backend]
-    environment:
-      BACKEND_URL: http://backend:8080
-      JWT_SECRET: demo-only-jwt-secret-change-me-0123456789abcdef
-    ports: ["3000:3000"]
-
+  mongo:
+    image: mongo:7
+    ports: ['27017:27017']
+    volumes: ['mongodata:/data/db']
 volumes:
-  pgdata:
-  uploads:
+  mongodata:
